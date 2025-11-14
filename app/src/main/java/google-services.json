@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "659025284048",
+    "firebase_url": "https://smarthomecontrol-31eb5-default-rtdb.firebaseio.com",
+    "project_id": "smarthomecontrol-31eb5",
+    "storage_bucket": "smarthomecontrol-31eb5.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:659025284048:android:820c5f8b0ff2f296fa87d5",
+        "android_client_info": {
+          "package_name": "com.elo.smarthomecontrol"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDzB3qV3jaRtkGFtx9q479YU3gQr9aopBg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
