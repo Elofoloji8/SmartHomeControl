@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))

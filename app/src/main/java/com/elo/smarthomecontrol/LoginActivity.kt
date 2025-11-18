@@ -5,17 +5,21 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class LoginActivity : ComponentActivity() {
     private lateinit var auth: FirebaseAuth
+    private val database = FirebaseDatabase.getInstance().reference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +35,8 @@ class LoginActivity : ComponentActivity() {
                     startActivity(Intent(this, RegisterActivity::class.java))
                     finish()
                 },
-                auth = auth
+                auth = auth,
+                database = database
             )
         }
     }
@@ -41,15 +46,19 @@ class LoginActivity : ComponentActivity() {
 fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onGoToRegister: () -> Unit,
-    auth: FirebaseAuth
+    auth: FirebaseAuth,
+    database: com.google.firebase.database.DatabaseReference
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var message by remember { mutableStateOf("") }
 
+    // 🎨 Lacivert tema
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xFF0B1C2C)), // Lacivert arka plan
+        color = Color(0xFF0B1C2C)
     ) {
         Column(
             modifier = Modifier
@@ -58,14 +67,26 @@ fun LoginScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Text("Giriş Yap", style = MaterialTheme.typography.headlineMedium)
-            Spacer(Modifier.height(20.dp))
+            Text(
+                "Smart Home Control",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White
+            )
+            Spacer(Modifier.height(24.dp))
 
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("E-posta") },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedLabelColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                )
             )
 
             Spacer(Modifier.height(8.dp))
@@ -75,7 +96,15 @@ fun LoginScreen(
                 onValueChange = { password = it },
                 label = { Text("Şifre") },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = Color.White,
+                    unfocusedBorderColor = Color.LightGray,
+                    focusedLabelColor = Color.White,
+                    cursorColor = Color.White,
+                    focusedTextColor = Color.White,
+                    unfocusedTextColor = Color.White
+                )
             )
 
             Spacer(Modifier.height(16.dp))
@@ -86,29 +115,55 @@ fun LoginScreen(
                         auth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener { task ->
                                 if (task.isSuccessful) {
-                                    message = "Giriş başarılı ✅"
+                                    val user = auth.currentUser
+                                    val uid = user?.uid ?: return@addOnCompleteListener
+
+                                    // Kullanıcı veritabanında varsa güncelle, yoksa oluştur
+                                    val userRef = database.child("users").child(uid)
+                                    userRef.get().addOnSuccessListener { snapshot ->
+                                        if (!snapshot.exists()) {
+                                            val userData = mapOf(
+                                                "email" to email,
+                                                "profileImage" to "",
+                                                "createdAt" to System.currentTimeMillis(),
+                                                "lastLogin" to System.currentTimeMillis()
+                                            )
+                                            userRef.setValue(userData)
+                                        } else {
+                                            userRef.child("lastLogin")
+                                                .setValue(System.currentTimeMillis())
+                                        }
+                                    }
+
+                                    Toast.makeText(
+                                        auth.app.applicationContext,
+                                        "Giriş başarılı ✅",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
                                     onLoginSuccess()
                                 } else {
-                                    message = "Hata: ${task.exception?.message}"
+                                    message =
+                                        "Giriş başarısız: ${task.exception?.localizedMessage ?: "Bilinmeyen hata"}"
                                 }
                             }
                     } else {
                         message = "Lütfen e-posta ve şifre girin"
                     }
                 },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White)
             ) {
-                Text("Giriş Yap")
+                Text("Giriş Yap", color = Color(0xFF0B1C2C))
             }
 
             Spacer(Modifier.height(12.dp))
 
             TextButton(onClick = onGoToRegister) {
-                Text("Hesabın yok mu? Kayıt Ol")
+                Text("Hesabın yok mu? Kayıt Ol", color = Color.LightGray)
             }
 
             Spacer(Modifier.height(8.dp))
-            Text(message)
+            Text(message, color = Color.Red)
         }
     }
 }
