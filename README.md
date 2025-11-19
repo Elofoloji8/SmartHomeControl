@@ -1,120 +1,99 @@
-🏠 Smart Home Control
+# 🏠 Smart Home Control
 
-Smart Home Control, kullanıcıların akıllı ev cihazlarını uzaktan yönetebilmesine imkân sağlayan, modern arayüzlü ve Firebase tabanlı bir mobil uygulamadır.
-Sistem; cihaz kontrolü, gerçek zamanlı sensör verisi, tema değiştirme, profil yönetimi ve güvenli kullanıcı doğrulama gibi özellikler sunar.
+Smart Home Control, kullanıcıların akıllı ev cihazlarını (LED, fan, sensör, su seviyesi vb.) uzaktan yönetebilmesini sağlayan Firebase tabanlı bir mobil uygulamadır. Uygulama; kullanıcı girişi, tema değiştirme, profil yönetimi ve gerçek zamanlı veri takibi gibi modern fonksiyonlara sahiptir.
 
-📱 Özellikler
-🔐 Kullanıcı Girişi & Kayıt
+---
 
-Firebase Authentication ile güvenli e-posta/şifre girişi
+## 📱 Özellikler
 
-Yeni kullanıcı oluşturma
+### ✅ Kullanıcı Girişi & Kayıt
+- Firebase Authentication ile e-posta/şifre tabanlı oturum açma  
+- Kayıt olma ve güvenli giriş  
+- Şifre güncelleme  
+- Çıkış yapma  
 
-Şifre güncelleme
+### ✅ Gerçek Zamanlı Kontrol
+- LED, fan, su seviyesi ve hareket sensörü verileri gerçek zamanlı Firebase’den okunur  
+- Cihazlar anlık olarak açılıp kapatılabilir  
 
-Güvenli çıkış işlemi
+### ✅ Tema Değiştirici (Dark / Light Mode)
+- Aydınlık & karanlık tema desteği  
+- Kullanıcı tercihi DataStore ile kalıcı olarak saklanır  
 
-⚡ Gerçek Zamanlı Kontrol
+### ✅ Profil Sayfası
+- Profil fotoğrafı yükleme (Base64 formatında Firebase’e kaydedilir)  
+- Şifre güncelleme  
+- Hesap oluşturulma tarihini görüntüleme  
 
-LED, fan, su seviyesi ve PIR sensör durumlarını anlık görme
+### ✅ Modern UI (Jetpack Compose)
+- Gradient arka planlar  
+- Material 3 bileşenleri  
+- Yuvarlatılmış kart tasarımları  
+- Minimal ve modern arayüz  
 
-Cihazları tek dokunuşla açma/kapatma
+---
 
-Değerler Firebase Realtime Database üzerinden canlı güncellenir
+## 🤖 Teknolojiler
 
-🌙 Tema Değiştirici (Dark / Light Mode)
+| Teknoloji | Açıklama |
+|----------|----------|
+| **Kotlin (Jetpack Compose)** | Modern UI framework |
+| **Firebase Authentication** | Kullanıcı doğrulama |
+| **Firebase Realtime Database** | Gerçek zamanlı veri depolama |
+| **Material 3** | Modern UI bileşenleri |
+| **DataStore Preferences** | Tema & dil tercihlerinin saklanması |
 
-Modern ışık ve karanlık tema desteği
+---
 
-Seçilen tema DataStore ile kalıcı olarak saklanır
+## 🖥️ Dosya Yapısı
 
-UI, temaya göre dinamik olarak güncellenir
-
-👤 Profil Sayfası
-
-Profil fotoğrafı yükleme (Base64 olarak Firebase'e kaydedilir)
-
-Şifre değiştirme
-
-Hesap oluşturulma tarihi ve kayıtlı e-posta görüntüleme
-
-🎨 Modern UI (Jetpack Compose)
-
-Gradient arka planlar
-
-Material 3 tasarım bileşenleri
-
-Yuvarlatılmış kartlar, yumuşak geçişler
-
-Responsive ve temiz Compose mimarisi
-
-🤖 Kullanılan Teknolojiler
-Teknoloji	Amaç
-Kotlin (Jetpack Compose)	Modern UI geliştirme
-Firebase Authentication	Kullanıcı doğrulama
-Firebase Realtime Database	Gerçek zamanlı veri depolama
-Material 3	Arayüz bileşenleri ve tema desteği
-DataStore Preferences	Kalıcı tema ve dil ayarları
-🗂️ Proje Dosya Yapısı
 SmartHomeControl/
-├── StartActivity.kt            # Splash / Oturum kontrolü
-│                                - Login veya Main yönlendirmesi
-│                                - Kullanıcı ilk giriş kaydı
-│                                - Tema / dil uyumu
+├── StartActivity.kt
+│ └── Splash ekranı, oturum kontrolü, tema/dil yükleme
 │
-├── MainActivity.kt             # Ana ekran (Dashboard / Profil / Ayarlar)
-│                                - Realtime kontrol
-│                                - Navigasyon bar
+├── MainActivity.kt
+│ └── Dashboard, Profil, Ayarlar sekmeleri
 │
-├── LoginActivity.kt            # Kullanıcı girişi
-│                                - Firebase auth
-│                                - Modern tasarım
+├── LoginActivity.kt
+│ └── Firebase ile kullanıcı girişi
 │
-├── RegisterActivity.kt         # Yeni kullanıcı kaydı
+├── RegisterActivity.kt
+│ └── Yeni kullanıcı oluşturma
 │
-├── ProfileActivity.kt          # Profil yönetimi
-│                                - Fotoğraf yükleme
-│                                - Şifre güncelleme
+├── ProfileActivity.kt
+│ └── Profil fotoğrafı, şifre güncelleme
 │
 ├── data/
-│   ├── ThemePreferences.kt     # Tema & dil ayarları (DataStore)
+│ └── ThemePreferences.kt # Tema ve dil ayarları (DataStore)
 │
 ├── ui/theme/
-│   ├── SmartHomeTheme.kt       # Material 3 uyumlu tema ayarları
+│ └── SmartHomeTheme.kt # Tema renkleri, Material 3 ayarları
 │
 └── res/
-    ├── drawable/
-    │   ├── logo_light.png
-    │   └── logo_dark.png
-    └── values/
-        ├── strings.xml
-        └── colors.xml
+├── drawable/ # Logo, ikonlar
+├── values/ # strings.xml, colors.xml
+└── mipmap/ # Uygulama ikonları
 
-⚙️ Kurulum
-1️⃣ Projeyi klonla:
+---
+
+## ⚙️ Kurulum Adımları
+
+### 1️⃣ Projeyi klonla
+```bash
 git clone https://github.com/<kullaniciadi>/SmartHomeControl.git
+2️⃣ Android Studio ile aç
+3️⃣ Firebase yapılandırması
+✔ Authentication
+“Email/Password” yöntemini aktif edin
 
-2️⃣ Android Studio’da projeyi aç.
-3️⃣ Firebase’i yapılandır:
+✔ Realtime Database
+“Start in Test Mode” ile başlatın
 
-Authentication → Email/Password etkinleştir
+✔ google-services.json ekleyin
+Firebase’den indirin → app/ klasörüne ekleyin
 
-Realtime Database → Start in test mode seç
+4️⃣ Uygulamayı çalıştır 🚀
 
-Firebase’den aldığın google-services.json dosyasını:
-
-app/
-└── google-services.json
-
-
-içine ekle
-
-4️⃣ Çalıştır 🚀
 🌟 Tema Önizlemesi
-
-Aşağıya koyacağın ekran görüntüleri için yer hazır:
-
-Karanlık Tema	/   Aydınlık Tema
-<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/5bb28be1-ee0b-4de3-a078-527b7c1fa468" />
-<img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/9702ef06-d2af-4cc3-85ca-27c116c99cd4" />
-
+Karanlık Mod<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/82e13cf6-8cb4-4496-885c-967195064ac1" />
+	Aydınlık Mod<img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/d54c0fa2-e84a-401f-a565-6f5d9db12ea1" />
