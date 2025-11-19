@@ -49,30 +49,30 @@ Smart Home Control, kullanıcıların akıllı ev cihazlarını (LED, fan, sens�
 
 SmartHomeControl/
 ├── StartActivity.kt
-│ └── Splash ekranı, oturum kontrolü, tema/dil yükleme
+│   └── Splash ekranı, oturum kontrolü, tema/dil yükleme
 │
 ├── MainActivity.kt
-│ └── Dashboard, Profil, Ayarlar sekmeleri
+│   └── Dashboard, Profil, Ayarlar sekmeleri
 │
 ├── LoginActivity.kt
-│ └── Firebase ile kullanıcı girişi
+│   └── Firebase ile kullanıcı girişi
 │
 ├── RegisterActivity.kt
-│ └── Yeni kullanıcı oluşturma
+│   └── Yeni kullanıcı oluşturma
 │
 ├── ProfileActivity.kt
-│ └── Profil fotoğrafı, şifre güncelleme
+│   └── Profil fotoğrafı, şifre güncelleme
 │
 ├── data/
-│ └── ThemePreferences.kt # Tema ve dil ayarları (DataStore)
+│   └── ThemePreferences.kt   # Tema ve dil ayarları (DataStore)
 │
 ├── ui/theme/
-│ └── SmartHomeTheme.kt # Tema renkleri, Material 3 ayarları
+│   └── SmartHomeTheme.kt     # Material 3 tema ayarları
 │
 └── res/
-├── drawable/ # Logo, ikonlar
-├── values/ # strings.xml, colors.xml
-└── mipmap/ # Uygulama ikonları
+    ├── drawable/             # Logo, ikonlar
+    ├── values/               # strings.xml, colors.xml
+    └── mipmap/               # Uygulama ikonları
 
 ---
 
@@ -94,6 +94,7 @@ Firebase’den indirin → app/ klasörüne ekleyin
 
 4️⃣ Uygulamayı çalıştır 🚀
 
-🌟 Tema Önizlemesi
-Karanlık Mod<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/82e13cf6-8cb4-4496-885c-967195064ac1" />
-	Aydınlık Mod<img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/d54c0fa2-e84a-401f-a565-6f5d9db12ea1" />
+###🌟 Tema Önizlemesi
+Karanlık Mod  /   Aydınlık Mod
+<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/82e13cf6-8cb4-4496-885c-967195064ac1" />
+<img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/d54c0fa2-e84a-401f-a565-6f5d9db12ea1" />
