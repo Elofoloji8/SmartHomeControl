@@ -1,113 +1,120 @@
-# 🏠 Smart Home Control
+🏠 Smart Home Control
 
-**Smart Home Control**, kullanıcıların akıllı ev cihazlarını (LED, fan, sensör, su seviyesi vb.) uzaktan yönetebilmesini sağlayan, Firebase tabanlı bir **mobil uygulamadır**. Uygulama; kullanıcı girişi, tema değiştirme, profil yönetimi ve gerçek zamanlı veri takibi gibi modern fonksiyonlara sahiptir.
+Smart Home Control, kullanıcıların akıllı ev cihazlarını uzaktan yönetebilmesine imkân sağlayan, modern arayüzlü ve Firebase tabanlı bir mobil uygulamadır.
+Sistem; cihaz kontrolü, gerçek zamanlı sensör verisi, tema değiştirme, profil yönetimi ve güvenli kullanıcı doğrulama gibi özellikler sunar.
 
----
+📱 Özellikler
+🔐 Kullanıcı Girişi & Kayıt
 
-## 📱 Özellikler
+Firebase Authentication ile güvenli e-posta/şifre girişi
 
-✅ **Kullanıcı Girişi & Kayıt**
+Yeni kullanıcı oluşturma
 
-* Firebase Authentication ile e-posta/şifre tabanlı oturum açma.
-* Kayıt olma, şifre yenileme, çıkış yapma.
+Şifre güncelleme
 
-✅ **Gerçek Zamanlı Kontrol**
+Güvenli çıkış işlemi
 
-* Işık, fan, su seviyesi ve hareket sensörü durumu anlık olarak Firebase'den okunur.
-* Kullanıcılar cihazlarını anında açabilir/kapatabilir.
+⚡ Gerçek Zamanlı Kontrol
 
-✅ **Tema Değiştirici (Dark/Light Mode)**
+LED, fan, su seviyesi ve PIR sensör durumlarını anlık görme
 
-* Aydınlık ve karanlık tema desteği.
-* Kullanıcı tercihi DataStore ile kalıcı olarak saklanır.
+Cihazları tek dokunuşla açma/kapatma
 
-✅ **Profil Sayfası**
+Değerler Firebase Realtime Database üzerinden canlı güncellenir
 
-* Profil fotoğrafı yükleme (Base64 formatında Firebase'e kaydedilir).
-* Şifre güncelleme, e-posta görüntüleme.
+🌙 Tema Değiştirici (Dark / Light Mode)
 
-✅ **Modern UI (Jetpack Compose)**
+Modern ışık ve karanlık tema desteği
 
-* Gradient arka planlar, Material 3 tasarımı.
-* Yuvarlatılmış kartlar ve yumuşak animasyonlar.
+Seçilen tema DataStore ile kalıcı olarak saklanır
 
----
+UI, temaya göre dinamik olarak güncellenir
 
-## 🤖 Teknolojiler
+👤 Profil Sayfası
 
-| Teknoloji                      | Amaç                                  |
-| ------------------------------ | ------------------------------------- |
-| **Kotlin (Jetpack Compose)**   | Modern UI framework.                  |
-| **Firebase Authentication**    | Kullanıcı doğrulama.                  |
-| **Firebase Realtime Database** | Gerçek zamanlı veri depolama.         |
-| **Material 3**                 | Tasarım bileşenleri ve renk temaları. |
-| **DataStore Preferences**      | Tema tercihi kaydı.                   |
+Profil fotoğrafı yükleme (Base64 olarak Firebase'e kaydedilir)
 
----
+Şifre değiştirme
 
-## 🖥️ Dosya Yapısı
+Hesap oluşturulma tarihi ve kayıtlı e-posta görüntüleme
 
-```
+🎨 Modern UI (Jetpack Compose)
+
+Gradient arka planlar
+
+Material 3 tasarım bileşenleri
+
+Yuvarlatılmış kartlar, yumuşak geçişler
+
+Responsive ve temiz Compose mimarisi
+
+🤖 Kullanılan Teknolojiler
+Teknoloji	Amaç
+Kotlin (Jetpack Compose)	Modern UI geliştirme
+Firebase Authentication	Kullanıcı doğrulama
+Firebase Realtime Database	Gerçek zamanlı veri depolama
+Material 3	Arayüz bileşenleri ve tema desteği
+DataStore Preferences	Kalıcı tema ve dil ayarları
+🗂️ Proje Dosya Yapısı
 SmartHomeControl/
-├── StartActivity.kt            → Uygulama açılış ekranı (Splash)
-│                                 - Kullanıcı oturum kontrolü
-│                                 - Login veya Main'e yönlendirme
-│                                 - Firebase'e ilk giriş bilgisi kaydı
-│                                 - Otomatik tema uyumu
+├── StartActivity.kt            # Splash / Oturum kontrolü
+│                                - Login veya Main yönlendirmesi
+│                                - Kullanıcı ilk giriş kaydı
+│                                - Tema / dil uyumu
 │
-├── MainActivity.kt             → Ana ekran (Dashboard, Profil, Ayarlar sekmeleri)
-│                                 - Gerçek zamanlı cihaz kontrolü
-│                                 - Navigasyon bar
+├── MainActivity.kt             # Ana ekran (Dashboard / Profil / Ayarlar)
+│                                - Realtime kontrol
+│                                - Navigasyon bar
 │
-├── LoginActivity.kt            → Giriş ekranı
-│                                 - Firebase Authentication girişi
-│                                 - Logo görünümü ve modern tasarım
+├── LoginActivity.kt            # Kullanıcı girişi
+│                                - Firebase auth
+│                                - Modern tasarım
 │
-├── RegisterActivity.kt         → Kayıt ekranı
-│                                 - Yeni kullanıcı oluşturma
-│                                 - Firebase'e veri kaydı
+├── RegisterActivity.kt         # Yeni kullanıcı kaydı
 │
-├── ProfileActivity.kt          → Profil sayfası
-│                                 - Profil fotoğrafı, şifre güncelleme
-│                                 - Tema uyumlu arayüz
+├── ProfileActivity.kt          # Profil yönetimi
+│                                - Fotoğraf yükleme
+│                                - Şifre güncelleme
 │
 ├── data/
-│   ├── ThemePreferences.kt     → Tema değişikliği için DataStore
+│   ├── ThemePreferences.kt     # Tema & dil ayarları (DataStore)
 │
 ├── ui/theme/
-│   ├── SmartHomeTheme.kt       → Tema renkleri, fontlar, Material 3 ayarları
+│   ├── SmartHomeTheme.kt       # Material 3 uyumlu tema ayarları
 │
 └── res/
     ├── drawable/
-    │   ├── logo_light.png      → Aydınlık tema logosu
-    │   └── logo_dark.png       → Karanlık tema logosu
-    └── layout/                 → Compose layout bileşenleri
-```
+    │   ├── logo_light.png
+    │   └── logo_dark.png
+    └── values/
+        ├── strings.xml
+        └── colors.xml
 
----
+⚙️ Kurulum
+1️⃣ Projeyi klonla:
+git clone https://github.com/<kullaniciadi>/SmartHomeControl.git
 
-## ⚙️ Kurulum Adımları
+2️⃣ Android Studio’da projeyi aç.
+3️⃣ Firebase’i yapılandır:
 
-1. Bu projeyi klonla:
+Authentication → Email/Password etkinleştir
 
-   ```bash
-   git clone https://github.com/<kullaniciadi>/SmartHomeControl.git
-   ```
-2. Android Studio’da projeyi aç.
-3. Firebase ayarlarını yap:
+Realtime Database → Start in test mode seç
 
-   * Authentication → E-posta/Şifre aktif et.
-   * Realtime Database → **Start in test mode** seç.
-   * `google-services.json` dosyasını `app/` klasörüne ekle.
-4. Uygulamayı çalıştır 🚀
+Firebase’den aldığın google-services.json dosyasını:
 
----
+app/
+└── google-services.json
 
-## 🌟 Tema Önizlemesi
 
-| Karanlık Mod | Aydınlık Mod
+içine ekle
 
-| <img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/9986ca1d-f7c9-489a-bf56-43662a672e89" /> | <img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/845c4595-d4d0-4e9b-83ed-c10e5e490aca" /> |
+4️⃣ Çalıştır 🚀
+🌟 Tema Önizlemesi
 
----
+Aşağıya koyacağın ekran görüntüleri için yer hazır:
+
+Karanlık Tema	/   Aydınlık Tema
+<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/5bb28be1-ee0b-4de3-a078-527b7c1fa468" />
+<img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/9702ef06-d2af-4cc3-85ca-27c116c99cd4" />
 
