@@ -93,7 +93,7 @@ git clone https://github.com/<kullaniciadi>/SmartHomeControl.git
 Firebase’den indirin → app/ klasörüne ekleyin
 
 4️⃣ Uygulamayı çalıştır 🚀
-
+```
 ###🌟 Tema Önizlemesi
 Karanlık Mod  /   Aydınlık Mod
 <img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/82e13cf6-8cb4-4496-885c-967195064ac1" />
