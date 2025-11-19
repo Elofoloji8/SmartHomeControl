@@ -104,11 +104,4 @@ SmartHomeControl/
 ---
 
 ## 🌟 Tema Önizlemesi
-
-| Aydınlık Mod                                                                               | Karanlık Mod                                                                             |
-| ------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------- |
-| ![Light Mode](https://github.com/<kullaniciadi>/SmartHomeControl/assets/light_preview.png) | ![Dark Mode](https://github.com/<kullaniciadi>/SmartHomeControl/assets/dark_preview.png) |
-
----
-Bu proje **MIT Lisansı** altında sunulmuştur.
-Özgürce kullanabilir, geliştirebilir ve paylaşabilirsiniz.
+<img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/125e3ec8-0028-499d-92d2-5ceb43d0372b" /> | <img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/a7f1821b-4265-4b96-9ded-466df6896b70" />
