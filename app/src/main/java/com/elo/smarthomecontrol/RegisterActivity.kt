@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -56,7 +57,7 @@ class RegisterActivity : ComponentActivity() {
 
     private fun registerUser(email: String, password: String) {
         if (email.isEmpty() || password.isEmpty()) {
-            Toast.makeText(this, "Lütfen tüm alanları doldurun", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.error_empty_fields), Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -67,7 +68,7 @@ class RegisterActivity : ComponentActivity() {
                     val uid = user?.uid
 
                     if (uid == null) {
-                        Toast.makeText(this, "Kullanıcı kimliği alınamadı, lütfen tekrar deneyin.", Toast.LENGTH_LONG).show()
+                        Toast.makeText(this, getString(R.string.error_uid_null), Toast.LENGTH_LONG).show()
                         return@addOnCompleteListener
                     }
 
@@ -84,18 +85,22 @@ class RegisterActivity : ComponentActivity() {
                     // 🔹 Veritabanına kaydet
                     database.child("users").child(uid).setValue(userData)
                         .addOnSuccessListener {
-                            Toast.makeText(this, "Kayıt başarılı ✅", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this, getString(R.string.register_success), Toast.LENGTH_SHORT).show()
                             startActivity(Intent(this, MainActivity::class.java))
                             finish()
                         }
                         .addOnFailureListener {
-                            Toast.makeText(this, "Veri kaydedilemedi: ${it.message}", Toast.LENGTH_LONG).show()
+                            Toast.makeText(
+                                this,
+                                getString(R.string.database_save_failed, it.message),
+                                Toast.LENGTH_LONG
+                            ).show()
                         }
 
                 } else {
                     Toast.makeText(
                         this,
-                        "Kayıt başarısız: ${task.exception?.localizedMessage ?: "Bilinmeyen hata"}",
+                        getString(R.string.register_failed, task.exception?.localizedMessage ?: "Unknown"),
                         Toast.LENGTH_LONG
                     ).show()
                 }
@@ -141,7 +146,7 @@ fun RegisterScreen(
             // 🖼️ Uygulama logosu (şeffaf PNG)
             Image(
                 painter = painterResource(id = R.drawable.logo),
-                contentDescription = "App Logo",
+                contentDescription = stringResource(R.string.app_logo_desc),
                 modifier = Modifier
                     .size(180.dp)
                     .padding(bottom = 16.dp)
@@ -151,7 +156,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("E-posta", color = textColor) },
+                label = { Text(stringResource(R.string.email_label), color = textColor) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
@@ -171,7 +176,7 @@ fun RegisterScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Şifre", color = textColor) },
+                label = { Text(stringResource(R.string.password_label), color = textColor) },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -201,14 +206,14 @@ fun RegisterScreen(
                 colors = ButtonDefaults.buttonColors(containerColor = buttonColor),
                 shape = MaterialTheme.shapes.medium
             ) {
-                Text("Kayıt Ol", color = buttonTextColor)
+                Text(stringResource(R.string.register_button), color = buttonTextColor)
             }
 
             Spacer(modifier = Modifier.height(12.dp))
 
             // 🔗 Giriş yap butonu
             TextButton(onClick = onLoginClick) {
-                Text("Zaten hesabın var mı? Giriş yap", color = textColor.copy(alpha = 0.8f))
+                Text(stringResource(R.string.have_account), color = textColor.copy(alpha = 0.8f))
             }
         }
     }

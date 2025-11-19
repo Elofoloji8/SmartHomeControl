@@ -2,11 +2,13 @@ package com.elo.smarthomecontrol
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.Configuration
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,36 +21,55 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.graphics.*
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.sp
-import androidx.compose.foundation.Image
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.*
 import com.elo.smarthomecontrol.data.ThemePreferences
 import com.elo.smarthomecontrol.ui.theme.SmartHomeTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
+import kotlinx.coroutines.flow.first
+import java.util.*
 import kotlin.math.roundToInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         val themePrefs = ThemePreferences(this)
 
-        setContent {
-            val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
-            SmartHomeTheme(darkTheme = isDarkMode) {
-                SmartHomeApp(themePrefs)
-            }
+        // 🔥 İlk olarak dili uygula (UI donmadan)
+        lifecycleScope.launch {
+            val lang = themePrefs.languageFlow.first()
+            applyLocale(this@MainActivity, lang)
+
+            // 🔥 Compose'u burada başlat
+            setContent {
+                val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
+                SmartHomeTheme(darkTheme = isDarkMode) {
+                    SmartHomeApp(themePrefs)
+                }
         }
     }
 }
+    fun applyLocale(activity: Activity, langCode: String) {
+        val locale = Locale(langCode)
+        Locale.setDefault(locale)
+
+        val config = Configuration()
+        config.setLocale(locale)
+
+        activity.resources.updateConfiguration(
+            config,
+            activity.resources.displayMetrics
+        )
+    }
 
 @Composable
 fun SmartHomeApp(themePrefs: ThemePreferences) {
@@ -56,13 +77,13 @@ fun SmartHomeApp(themePrefs: ThemePreferences) {
     val auth = FirebaseAuth.getInstance()
 
     val userId = auth.currentUser?.uid ?: run {
-        Toast.makeText(context, "Oturum bulunamadı, yeniden giriş yapın.", Toast.LENGTH_SHORT).show()
+        Toast.makeText(context, stringResource(R.string.session_not_found), Toast.LENGTH_SHORT).show()
         context.startActivity(Intent(context, LoginActivity::class.java))
         (context as? Activity)?.finish()
         return
     }
 
-    val email = auth.currentUser?.email ?: "Bilinmiyor"
+    val email = auth.currentUser?.email ?: stringResource(R.string.unknown)
     var selectedTab by remember { mutableStateOf("home") }
     val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
 
@@ -72,20 +93,27 @@ fun SmartHomeApp(themePrefs: ThemePreferences) {
                 NavigationBarItem(
                     selected = selectedTab == "home",
                     onClick = { selectedTab = "home" },
-                    icon = { Icon(Icons.Default.Home, contentDescription = "Ana Sayfa", tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
-                    label = { Text("Ana Sayfa", color = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) }
+                    icon = { Icon(Icons.Default.Home,
+                        contentDescription = stringResource(R.string.nav_home),
+                        tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
+                    label = { Text(stringResource(R.string.nav_home), color = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == "profile",
                     onClick = { selectedTab = "profile" },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Profil", tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
-                    label = { Text("Profil", color = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) }
+                    icon = { Icon(Icons.Default.AccountCircle,
+                        contentDescription = stringResource(R.string.nav_profile),
+                        tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
+                    label = { Text(stringResource(R.string.nav_profile)) }
                 )
                 NavigationBarItem(
                     selected = selectedTab == "settings",
                     onClick = { selectedTab = "settings" },
-                    icon = { Icon(Icons.Default.Settings, contentDescription = "Ayarlar", tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
-                    label = { Text("Ayarlar", color = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) }
+                    icon = { Icon(
+                        Icons.Default.Settings,
+                        contentDescription = stringResource(R.string.nav_settings),
+                        tint = if (isDarkMode) Color.White else Color(0xFF0B1C2C)) },
+                    label = { Text(stringResource(R.string.nav_settings)) }
                 )
             }
         }
@@ -104,9 +132,7 @@ fun SmartHomeApp(themePrefs: ThemePreferences) {
                     context.startActivity(Intent(context, LoginActivity::class.java))
                     (context as? Activity)?.finish()
                 },
-                onPasswordChange = { newPassword ->
-                    auth.currentUser?.updatePassword(newPassword)
-                }
+                onPasswordChange = { newPassword -> auth.currentUser?.updatePassword(newPassword) }
             )
 
             "settings" -> SettingsScreen(themePrefs)
@@ -120,11 +146,10 @@ fun SmartHomeDashboard(ref: DatabaseReference, modifier: Modifier = Modifier) {
     var fanStatus by remember { mutableStateOf("off") }
     var pirStatus by remember { mutableStateOf("none") }
     var waterLevel by remember { mutableStateOf("normal") }
-
     var temperatureList by remember { mutableStateOf(listOf<Double>()) }
     var humidityList by remember { mutableStateOf(listOf<Double>()) }
 
-    // Firebase dinleyiciler
+    // 🔹 Firebase dinleyiciler
     LaunchedEffect(Unit) {
         ref.child("devices").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
@@ -137,28 +162,24 @@ fun SmartHomeDashboard(ref: DatabaseReference, modifier: Modifier = Modifier) {
         })
         ref.child("sensors/temperature_log").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val values = snapshot.children.mapNotNull { it.getValue(Double::class.java) }
-                temperatureList = values.takeLast(5)
+                temperatureList = snapshot.children.mapNotNull { it.getValue(Double::class.java) }.takeLast(5)
             }
             override fun onCancelled(error: DatabaseError) {}
         })
         ref.child("sensors/humidity_log").addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
-                val values = snapshot.children.mapNotNull { it.getValue(Double::class.java) }
-                humidityList = values.takeLast(5)
+                humidityList = snapshot.children.mapNotNull { it.getValue(Double::class.java) }.takeLast(5)
             }
             override fun onCancelled(error: DatabaseError) {}
         })
     }
 
-    // 🌈 Tema renk geçişi (Profil ile aynı)
     val themePrefs = ThemePreferences(LocalContext.current)
     val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
-    val gradientColors = if (isDarkMode) {
+    val gradientColors = if (isDarkMode)
         listOf(Color(0xFF0B1C2C), Color(0xFF1C3A5F))
-    } else {
+    else
         listOf(Color(0xFFE8EAF6), Color(0xFFBBDEFB))
-    }
     val textColor = if (isDarkMode) Color.White else Color(0xFF0B1C2C)
     val cardBg = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color.White.copy(alpha = 0.85f)
     val shadowElevation = if (isDarkMode) 4.dp else 10.dp
@@ -172,30 +193,19 @@ fun SmartHomeDashboard(ref: DatabaseReference, modifier: Modifier = Modifier) {
         LazyColumn(horizontalAlignment = Alignment.CenterHorizontally) {
             item {
                 Image(
-                    painter = painterResource(id = R.drawable.logo_no_text), // kendi logo dosyanın adı
-                    contentDescription = "Smart Home Logo",
-                    modifier = Modifier
-                        .size(180.dp) // boyutu isteğe göre 120–200dp arası ayarlayabilirsin
-                        .padding(top = 8.dp, bottom = 24.dp)
+                    painter = painterResource(id = R.drawable.logo_no_text),
+                    contentDescription = stringResource(R.string.logo_desc),
+                    modifier = Modifier.size(180.dp).padding(top = 8.dp, bottom = 24.dp)
                 )
             }
-
-            item {
-                DeviceCardStyled("💡 LED Işığı", ledStatus, cardBg, shadowElevation, textColor) {
-                    val newState = if (ledStatus == "on") "off" else "on"
-                    ref.child("devices/led").setValue(newState)
-                }
-            }
-
-            item {
-                DeviceCardStyled("🌬️ Fan", fanStatus, cardBg, shadowElevation, textColor) {
-                    val newState = if (fanStatus == "on") "off" else "on"
-                    ref.child("devices/fan").setValue(newState)
-                }
-            }
-
-            item { InfoCardStyled("🚶 Hareket Sensörü (PIR)", pirStatus, cardBg, textColor, shadowElevation) }
-            item { InfoCardStyled("💧 Su Seviyesi", waterLevel, cardBg, textColor, shadowElevation) }
+            item { DeviceCardStyled(stringResource(R.string.device_led), ledStatus, cardBg, shadowElevation, textColor) {
+                ref.child("devices/led").setValue(if (ledStatus == "on") "off" else "on")
+            }}
+            item { DeviceCardStyled(stringResource(R.string.device_fan), fanStatus, cardBg, shadowElevation, textColor) {
+                ref.child("devices/fan").setValue(if (fanStatus == "on") "off" else "on")
+            }}
+            item { InfoCardStyled(stringResource(R.string.pir_sensor), pirStatus, cardBg, textColor, shadowElevation) }
+            item { InfoCardStyled(stringResource(R.string.water_level), waterLevel, cardBg, textColor, shadowElevation) }
             item { DualChartStyled(temperatureList, humidityList, textColor) }
         }
     }
@@ -250,12 +260,12 @@ fun InfoCardStyled(name: String, value: String, cardBg: Color, textColor: Color,
 @Composable
 fun DualChartStyled(temperatureList: List<Double>, humidityList: List<Double>, textColor: Color) {
     if (temperatureList.isEmpty() || humidityList.isEmpty()) {
-        Text("Veri bekleniyor...", color = textColor.copy(alpha = 0.6f))
+        Text(stringResource(R.string.waiting_data))
         return
     }
 
     Spacer(Modifier.height(16.dp))
-    Text("🌡️ Sıcaklık ve 💧 Nem Grafiği", style = MaterialTheme.typography.titleMedium, color = textColor)
+    Text(stringResource(R.string.temp_humidity_graph), style = MaterialTheme.typography.titleMedium, color = textColor)
     Spacer(Modifier.height(12.dp))
 
     Canvas(modifier = Modifier.fillMaxWidth().height(200.dp).padding(horizontal = 8.dp)) {
@@ -290,21 +300,50 @@ fun DualChartStyled(temperatureList: List<Double>, humidityList: List<Double>, t
     }
 
     Spacer(Modifier.height(8.dp))
-    Text("🌡️ Son sıcaklık: ${temperatureList.last().roundToInt()}°C", color = textColor)
-    Text("💧 Son nem: ${humidityList.last().roundToInt()}%", color = textColor)
+    Text(stringResource(
+        R.string.last_temperature,
+        temperatureList.last().roundToInt()
+    ), color = textColor)
+    Text(stringResource(
+        R.string.last_humidity,
+        humidityList.last().roundToInt()
+    ), color = textColor)
 }
 
+fun updateLocale(activity: Activity, langCode: String, themePrefs: ThemePreferences) {
+    val locale = Locale(langCode)
+    Locale.setDefault(locale)
+    val config = Configuration(activity.resources.configuration)
+    config.setLocale(locale)
+    activity.resources.updateConfiguration(config, activity.resources.displayMetrics)
+
+    val scope = CoroutineScope(Dispatchers.IO)
+    scope.launch { themePrefs.setLanguage(langCode) }
+
+    val intent = activity.intent
+    activity.finish()
+    activity.startActivity(intent)
+}
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(themePrefs: ThemePreferences) {
+    val context = LocalContext.current
     val scope = rememberCoroutineScope()
     val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
+    val storedLanguage by themePrefs.languageFlow.collectAsState(initial = "tr")
+    var selectedLanguage by remember { mutableStateOf("tr") }
 
-    val gradientColors = if (isDarkMode) {
-        listOf(Color(0xFF0B1C2C), Color(0xFF1C3A5F))
-    } else {
-        listOf(Color(0xFFE8EAF6), Color(0xFFBBDEFB))
+    LaunchedEffect(storedLanguage) {
+        selectedLanguage = storedLanguage
     }
+    var is24HourFormat by remember { mutableStateOf(true) }
+
+    val gradientColors = if (isDarkMode)
+        listOf(Color(0xFF0B1C2C), Color(0xFF1C3A5F))
+    else
+        listOf(Color(0xFFE8EAF6), Color(0xFFBBDEFB))
     val textColor = if (isDarkMode) Color.White else Color(0xFF0B1C2C)
+    val languages = listOf("Türkçe" to "tr", "English" to "en")
 
     Box(
         modifier = Modifier
@@ -317,34 +356,92 @@ fun SettingsScreen(themePrefs: ThemePreferences) {
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.Start
         ) {
-            Text("Ayarlar ⚙️", fontSize = 26.sp, fontWeight = FontWeight.Bold, color = textColor)
+            Text(stringResource(R.string.settings_title), fontSize = 26.sp, fontWeight = FontWeight.Bold, color = textColor)
             Spacer(modifier = Modifier.height(24.dp))
 
+            // 🌗 Tema Değişimi
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Karanlık Tema", fontSize = 18.sp, color = textColor)
+                Text(stringResource(R.string.dark_theme), fontSize = 18.sp, color = textColor)
                 Switch(
                     checked = isDarkMode,
                     onCheckedChange = { scope.launch { themePrefs.setDarkMode(it) } },
                     colors = SwitchDefaults.colors(
                         checkedThumbColor = Color(0xFF4CAF50),
-                        checkedTrackColor = Color(0xFF81C784),
-                        uncheckedThumbColor = Color.Gray,
-                        uncheckedTrackColor = Color.LightGray
+                        checkedTrackColor = Color(0xFF81C784)
                     )
                 )
             }
 
+            Spacer(modifier = Modifier.height(24.dp))
+            Divider(color = textColor.copy(alpha = 0.3f))
             Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                text = if (isDarkMode) "🌙 Karanlık tema aktif" else "☀️ Aydınlık tema aktif",
-                color = textColor.copy(alpha = 0.9f),
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Medium
-            )
+
+            // 🌐 Dil Seçimi
+            Text(stringResource(R.string.language_settings), color = textColor, fontSize = 20.sp, fontWeight = FontWeight.Bold)
+            Spacer(modifier = Modifier.height(8.dp))
+
+            var expanded by remember { mutableStateOf(false) }
+            ExposedDropdownMenuBox(expanded = expanded, onExpandedChange = { expanded = !expanded }) {
+                OutlinedTextField(
+                    value = languages.firstOrNull { it.second == selectedLanguage }?.first
+                        ?: stringResource(R.string.language_turkish),
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.app_language)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                    modifier = Modifier.menuAnchor().fillMaxWidth(),
+                    colors = OutlinedTextFieldDefaults.colors(
+                        focusedBorderColor = textColor,
+                        unfocusedBorderColor = textColor.copy(alpha = 0.5f),
+                        focusedLabelColor = textColor,
+                        cursorColor = textColor
+                    )
+                )
+                ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                    languages.forEach { (label, code) ->
+                        DropdownMenuItem(
+                            text = { Text(label, color = textColor) },
+                            onClick = {
+                                selectedLanguage = code
+                                expanded = false
+                                updateLocale(context as Activity, code, themePrefs)
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // 🕒 Saat Formatı
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(stringResource(R.string.time_format_24h), fontSize = 18.sp, color = textColor)
+                Switch(
+                    checked = is24HourFormat,
+                    onCheckedChange = {
+                        is24HourFormat = it
+                        val format = if (it)
+                            context.getString(R.string.time_24h)
+                        else
+                            context.getString(R.string.time_12h)
+
+                        Toast.makeText(
+                            context,
+                            context.getString(R.string.time_format_changed, format),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                )
+            }
         }
     }
+}
 }

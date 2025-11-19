@@ -3,7 +3,7 @@ package com.elo.smarthomecontrol
 import android.content.Intent
 import android.os.Bundle
 import android.util.Patterns
-import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -16,10 +16,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
@@ -74,6 +74,7 @@ fun LoginScreen(
     auth: FirebaseAuth,
     database: com.google.firebase.database.DatabaseReference
 ) {
+    val context = LocalContext.current
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -113,7 +114,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
-                label = { Text("E-posta", color = textColor) },
+                label = { Text(stringResource(R.string.email_label), color = textColor) },
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
                 colors = OutlinedTextFieldDefaults.colors(
@@ -132,7 +133,7 @@ fun LoginScreen(
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Şifre", color = textColor) },
+                label = { Text(stringResource(R.string.password_label), color = textColor) },
                 singleLine = true,
                 visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                 trailingIcon = {
@@ -159,11 +160,11 @@ fun LoginScreen(
                 onClick = {
                     message = ""
                     if (email.isBlank() || password.isBlank()) {
-                        message = "Lütfen e-posta ve şifre girin"
+                        message = context.getString(R.string.error_empty_fields)
                         return@Button
                     }
                     if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-                        message = "Geçerli bir e-posta adresi girin"
+                        message = context.getString(R.string.error_invalid_email)
                         return@Button
                     }
 
@@ -201,7 +202,7 @@ fun LoginScreen(
                                     is FirebaseNetworkException -> "İnternet bağlantısı yok"
                                     else -> e?.localizedMessage ?: "Bilinmeyen hata"
                                 }
-                                message = "Giriş başarısız: $errorMsg"
+                                message = context.getString(R.string.error_login_failed, errorMsg)
                             }
                         }
                 },
@@ -217,14 +218,14 @@ fun LoginScreen(
                         strokeWidth = 2.dp
                     )
                 else
-                    Text("Giriş Yap", color = buttonTextColor)
+                    Text(stringResource(R.string.login_button), color = buttonTextColor)
             }
 
             Spacer(Modifier.height(16.dp))
 
             // 🔗 Kayıt Ol
             TextButton(onClick = onGoToRegister) {
-                Text("Hesabın yok mu? Kayıt Ol", color = textColor.copy(alpha = 0.8f))
+                Text(stringResource(R.string.register_text), color = textColor.copy(alpha = 0.8f))
             }
 
             Spacer(Modifier.height(8.dp))

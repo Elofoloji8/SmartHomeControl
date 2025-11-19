@@ -1,3 +1,92 @@
 <resources>
     <string name="app_name">SmartHomeControl</string>
+    <!--LoginActivity-->
+    <string name="app_logo_desc_login">Uygulama Logosu</string>
+
+    <string name="email_label">E-posta</string>
+    <string name="password_label">Şifre</string>
+    <string name="error_empty_fields">Lütfen e-posta ve şifre girin</string>
+    <string name="error_invalid_email">Geçerli bir e-posta adresi girin</string>
+    <string name="error_user_not_found">Böyle bir kullanıcı yok</string>
+    <string name="error_wrong_credentials">E-posta veya şifre hatalı</string>
+    <string name="error_no_internet">İnternet bağlantısı yok</string>
+    <string name="error_unknown">Bilinmeyen hata</string>
+    <string name="error_login_failed">Giriş başarısız: %1$s</string>
+    <string name="error_user_info">Kullanıcı bilgisi alınamadı.</string>
+    <string name="login_button">Giriş Yap</string>
+    <string name="register_text">Hesabın yok mu? Kayıt Ol</string>
+
+    <!--MainActivity-->
+
+    <string name="settings_title">Ayarlar ⚙️</string>
+    <string name="nav_home">Ana Sayfa</string>
+    <string name="nav_profile">Profil</string>
+    <string name="nav_settings">Ayarlar</string>
+    <!-- Dashboard -->
+    <string name="device_led">💡 LED Işığı</string>
+    <string name="device_fan">🌬️ Fan</string>
+    <string name="pir_sensor">🚶 Hareket Sensörü (PIR)</string>
+    <string name="water_level">💧 Su Seviyesi</string>
+    <!-- Chart -->
+    <string name="temp_humidity_graph">🌡️ Sıcaklık ve 💧 Nem Grafiği</string>
+    <string name="waiting_data">Veri bekleniyor...</string>
+    <string name="last_temperature">🌡️ Son sıcaklık: %1$d°C</string>
+    <string name="last_humidity">💧 Son nem: %1$d%%</string>
+    <!-- Session -->
+    <string name="session_not_found">Oturum bulunamadı, yeniden giriş yapın.</string>
+    <string name="unknown">Bilinmiyor</string>
+    <string name="logo_desc">Akıllı Ev Logosu</string>
+    <!-- Settings -->
+    <string name="dark_theme">Karanlık Tema</string>
+    <string name="language_settings">🌐 Dil Ayarları</string>
+    <string name="app_language">Uygulama Dili</string>
+    <string name="language_turkish">Türkçe</string>
+    <string name="language_english">İngilizce</string>
+    <string name="time_format_24h">24 Saat Formatı</string>
+    <string name="time_24h">24 Saat</string>
+    <string name="time_12h">12 Saat</string>
+    <string name="time_format_changed">Saat formatı: %1$s</string>
+
+    <!--ProfileActivity-->
+    <!-- GENERAL -->
+    <string name="unknown_profile">Bilinmiyor</string>
+    <!-- PROFILE HEADER -->
+    <string name="profile_title">Profil Bilgileri</string>
+    <!-- IMAGE CONTENT DESCRIPTIONS -->
+    <string name="desc_new_photo">Yeni Fotoğraf</string>
+    <string name="desc_firebase_photo">Firebase Fotoğrafı</string>
+    <string name="desc_default_profile">Varsayılan Profil</string>
+    <!-- PROFILE BUTTONS -->
+    <string name="change_photo">Fotoğraf Değiştir</string>
+    <string name="photo_updated">Profil Fotoğrafı Güncellendi</string>
+    <!-- PROFILE INFO -->
+    <string name="email_label_profile">E-posta</string>
+    <string name="created_at_label">Kayıt Tarihi</string>
+    <!-- PASSWORD -->
+    <string name="new_password_label">Yeni Şifre</string>
+    <string name="update_password_button">Şifreyi Güncelle</string>
+    <string name="logout_button">Çıkış Yap</string>
+    <!-- FEEDBACK MESSAGES -->
+    <string name="password_updated">Şifre güncellendi ✅</string>
+    <string name="error_with_message">Hata: %1$s</string>
+    <string name="error_data_fetch">Veri alınamadı: %1$s</string>
+
+    <!--RegisterActivity-->
+    <!-- GENERAL -->
+    <string name="app_logo_desc">Uygulama Logosu</string>
+    <!-- FORM LABELS -->
+    <string name="email_label_register">E-posta</string>
+    <string name="password_label_register">Şifre</string>
+    <!-- REGISTER BUTTONS / TEXTS -->
+    <string name="register_button">Kayıt Ol</string>
+    <string name="have_account">Zaten hesabın var mı? Giriş yap</string>
+    <!-- TOAST MESSAGES -->
+    <string name="error_empty_fields_register">Lütfen tüm alanları doldurun</string>
+    <string name="error_uid_null">Kullanıcı kimliği alınamadı, lütfen tekrar deneyin.</string>
+    <string name="register_success">Kayıt başarılı ✅</string>
+    <string name="register_failed">Kayıt başarısız: %1$s</string>
+    <string name="database_save_failed">Veri kaydedilemedi: %1$s</string>
+
+    <!--StartActivity-->
+    <string name="splash_logo_desc">SmartHomeControl Logosu</string>
 </resources>

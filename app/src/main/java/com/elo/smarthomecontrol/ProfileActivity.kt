@@ -24,6 +24,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
@@ -33,7 +34,6 @@ import com.elo.smarthomecontrol.data.ThemePreferences
 import com.elo.smarthomecontrol.ui.theme.SmartHomeTheme
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
-import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
@@ -50,7 +50,7 @@ class ProfileActivity : ComponentActivity() {
 
             SmartHomeTheme(darkTheme = isDarkMode) {
                 val userId = auth.uid ?: ""
-                val email = auth.currentUser?.email ?: "Bilinmiyor"
+                val email = auth.currentUser?.email ?: ""
 
                 ProfileScreen(
                     email = email,
@@ -63,10 +63,18 @@ class ProfileActivity : ComponentActivity() {
                     onPasswordChange = { newPassword ->
                         auth.currentUser?.updatePassword(newPassword)
                             ?.addOnSuccessListener {
-                                Toast.makeText(this, "Şifre güncellendi ✅", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    this,
+                                    getString(R.string.password_updated),
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                             ?.addOnFailureListener {
-                                Toast.makeText(this, "Hata: ${it.message}", Toast.LENGTH_LONG).show()
+                                Toast.makeText(
+                                    this,
+                                    getString(R.string.error_with_message, it.message ?: ""),
+                                    Toast.LENGTH_LONG
+                                ).show()
                             }
                     }
                 )
@@ -88,35 +96,37 @@ fun ProfileScreen(
     var password by remember { mutableStateOf("") }
     var base64Image by remember { mutableStateOf<String?>(null) }
     var bitmapImage by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
-    var createdAt by remember { mutableStateOf<String>("") }
+    var createdAt by remember { mutableStateOf("") }
     var userEmail by remember { mutableStateOf(email) }
 
     val themePrefs = remember { ThemePreferences(context) }
     val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
 
-    // 🔄 Firebase'den kullanıcı verilerini güvenli şekilde al
     LaunchedEffect(Unit) {
-        databaseRef.get().addOnSuccessListener { snapshot ->
-            // Profil resmi
-            base64Image = snapshot.child("profileImage").getValue(String::class.java)
+        databaseRef.get()
+            .addOnSuccessListener { snapshot ->
+                base64Image = snapshot.child("profileImage").getValue(String::class.java)
 
-            // Tarihler (String veya Long olabilir)
-            val safeCreatedAt = snapshot.child("createdAt").value?.toString()?.toLongOrNull() ?: 0L
-            if (safeCreatedAt > 0L) {
-                val date = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.getDefault())
-                createdAt = date.format(java.util.Date(safeCreatedAt))
-            }
+                val safeCreatedAt =
+                    snapshot.child("createdAt").value?.toString()?.toLongOrNull() ?: 0L
+                if (safeCreatedAt > 0L) {
+                    val date = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm")
+                    createdAt = date.format(java.util.Date(safeCreatedAt))
+                }
 
-            // E-posta iki yerde olabilir
-            userEmail = snapshot.child("email").getValue(String::class.java)
-                ?: snapshot.child("devices/email").getValue(String::class.java)
+                userEmail =
+                    snapshot.child("email").getValue(String::class.java)
                         ?: email
-        }.addOnFailureListener {
-            Toast.makeText(context, "Veri alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
-        }
+            }
+            .addOnFailureListener {
+                Toast.makeText(
+                    context,
+                    context.getString(R.string.error_data_fetch, it.message ?: ""),
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
     }
 
-    // 📷 Galeriden fotoğraf seçme
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
@@ -127,193 +137,162 @@ fun ProfileScreen(
 
             val outputStream = ByteArrayOutputStream()
             bitmap.compress(android.graphics.Bitmap.CompressFormat.JPEG, 70, outputStream)
-            val base64String = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
+            val base64String =
+                Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT)
 
             databaseRef.child("profileImage").setValue(base64String)
-            Toast.makeText(context, "Profil fotoğrafı güncellendi ✅", Toast.LENGTH_SHORT).show()
+
+            Toast.makeText(context, context.getString(R.string.photo_updated), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
-    // 🔍 Base64 verisini güvenli çöz (try-catch Compose dışı)
     val safeBitmap = remember(base64Image) {
         try {
             base64Image?.let {
-                val imageBytes = Base64.decode(it, Base64.DEFAULT)
-                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                val bytes = Base64.decode(it, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
             }
         } catch (e: Exception) {
             null
         }
     }
 
-    // 🎨 Tema renkleri
-    val gradientColors = if (isDarkMode) {
+    val gradientColors = if (isDarkMode)
         listOf(Color(0xFF0B1C2C), Color(0xFF1C3A5F))
-    } else {
+    else
         listOf(Color(0xFFE8EAF6), Color(0xFFBBDEFB))
-    }
 
     val textColor = if (isDarkMode) Color.White else Color(0xFF0B1C2C)
-    val darkBlue = Color(0xFF0B1C2C)
-    val navyBlue = Color(0xFF112D44)
 
-    val photoButtonColors = if (isDarkMode) {
-        ButtonDefaults.buttonColors(
-            containerColor = Color.White.copy(alpha = 0.9f),
-            contentColor = darkBlue
-        )
-    } else {
-        ButtonDefaults.buttonColors(
-            containerColor = navyBlue,
-            contentColor = Color.White
-        )
-    }
-
-    val primaryButtonColors = if (isDarkMode) {
-        ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = darkBlue
-        )
-    } else {
-        ButtonDefaults.buttonColors(
-            containerColor = navyBlue,
-            contentColor = Color.White
-        )
-    }
-
-    val secondaryButtonColors = if (isDarkMode) {
-        ButtonDefaults.buttonColors(
-            containerColor = Color.White.copy(alpha = 0.8f),
-            contentColor = Color(0xFFD32F2F)
-        )
-    } else {
-        ButtonDefaults.buttonColors(
-            containerColor = Color(0xFFFFCDD2),
-            contentColor = Color(0xFFB71C1C)
-        )
-    }
-
-    // 🧭 Ekran düzeni
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(brush = Brush.verticalGradient(gradientColors))
-            .padding(24.dp),
-        contentAlignment = Alignment.TopCenter
+            .background(Brush.verticalGradient(gradientColors))
+            .padding(24.dp)
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
             Text(
-                text = "Profil Bilgileri",
+                text = stringResource(R.string.profile_title),
                 fontSize = 26.sp,
-                color = textColor,
-                fontWeight = FontWeight.Bold
+                fontWeight = FontWeight.Bold,
+                color = textColor
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
-            // Profil Fotoğrafı
             Box(
                 modifier = Modifier
                     .size(130.dp)
                     .clip(CircleShape)
-                    .background(if (isDarkMode) Color.White.copy(alpha = 0.15f) else Color(0xFFE0E0E0)),
+                    .background(Color.Gray.copy(alpha = 0.2f)),
                 contentAlignment = Alignment.Center
             ) {
                 when {
-                    bitmapImage != null -> {
+                    bitmapImage != null ->
                         Image(
                             bitmap = bitmapImage!!.asImageBitmap(),
-                            contentDescription = "Yeni Fotoğraf",
+                            contentDescription = null,
                             modifier = Modifier.size(130.dp).clip(CircleShape)
                         )
-                    }
-                    safeBitmap != null -> {
+
+                    safeBitmap != null ->
                         Image(
                             bitmap = safeBitmap.asImageBitmap(),
-                            contentDescription = "Firebase Fotoğrafı",
+                            contentDescription = null,
                             modifier = Modifier.size(130.dp).clip(CircleShape)
                         )
-                    }
-                    else -> {
+
+                    else ->
                         Image(
                             painter = rememberAsyncImagePainter("https://cdn-icons-png.flaticon.com/512/847/847969.png"),
-                            contentDescription = "Varsayılan Profil",
+                            contentDescription = null,
                             modifier = Modifier.size(130.dp).clip(CircleShape)
                         )
-                    }
                 }
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
             Button(
                 onClick = { imagePicker.launch("image/*") },
-                colors = photoButtonColors,
-                shape = RoundedCornerShape(30.dp)
+                shape = RoundedCornerShape(30.dp),
+                colors = if (!isDarkMode) {
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFF112D44)
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
-                Text("Fotoğraf Değiştir", fontWeight = FontWeight.Medium)
+                Text(stringResource(R.string.change_photo))
             }
 
-            Spacer(modifier = Modifier.height(30.dp))
+            Spacer(Modifier.height(30.dp))
 
-            // Bilgi kartı
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
-                    containerColor = if (isDarkMode) Color.White.copy(alpha = 0.1f) else Color(0xFFF5F5F5)
+                    containerColor = Color.White.copy(alpha = 0.15f)
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start
-                ) {
-                    Text("E-posta", color = textColor.copy(alpha = 0.7f))
-                    Text(userEmail, color = textColor, fontWeight = FontWeight.Medium)
+                Column(Modifier.padding(16.dp)) {
+
+                    Text(stringResource(R.string.email_label), color = textColor)
+                    Text(userEmail ?: "", color = textColor)
 
                     if (createdAt.isNotEmpty()) {
-                        Spacer(modifier = Modifier.height(8.dp))
-                        Text("Kayıt Tarihi", color = textColor.copy(alpha = 0.7f))
-                        Text(createdAt, color = textColor, fontWeight = FontWeight.Medium)
+                        Spacer(Modifier.height(8.dp))
+                        Text(stringResource(R.string.created_at_label), color = textColor)
+                        Text(createdAt, color = textColor)
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
 
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Yeni Şifre") },
-                singleLine = true,
+                label = { Text(stringResource(R.string.new_password_label)) },
                 visualTransformation = PasswordVisualTransformation(),
-                modifier = Modifier.fillMaxWidth(),
-                colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = MaterialTheme.colorScheme.primary,
-                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                    cursorColor = MaterialTheme.colorScheme.primary,
-                    focusedLabelColor = MaterialTheme.colorScheme.primary
-                )
+                modifier = Modifier.fillMaxWidth()
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(Modifier.height(16.dp))
+
             Button(
                 onClick = { onPasswordChange(password) },
                 modifier = Modifier.fillMaxWidth(),
-                colors = primaryButtonColors,
-                shape = RoundedCornerShape(12.dp)
+                colors = if (!isDarkMode) {
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF112D44),
+                        contentColor = Color.White
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
-                Text("Şifreyi Güncelle", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.update_password_button))
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(Modifier.height(24.dp))
+
             Button(
                 onClick = onLogout,
-                colors = secondaryButtonColors,
                 modifier = Modifier.fillMaxWidth(),
-                shape = RoundedCornerShape(12.dp)
+                colors = if (!isDarkMode) {
+                    ButtonDefaults.buttonColors(
+                        containerColor = Color.White,
+                        contentColor = Color(0xFFD32F2F)
+                    )
+                } else {
+                    ButtonDefaults.buttonColors()
+                }
             ) {
-                Text("Çıkış Yap", fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.logout_button))
             }
         }
     }

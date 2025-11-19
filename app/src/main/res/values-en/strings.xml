@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">SmartHomeControl</string>
+    <!--LoginActivity-->
+    <string name="app_logo_desc_login">App Logo</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="error_empty_fields">Please enter email and password</string>
+    <string name="error_invalid_email">Enter a valid email address</string>
+    <string name="error_user_not_found">No such user found</string>
+    <string name="error_wrong_credentials">Incorrect email or password</string>
+    <string name="error_no_internet">No internet connection</string>
+    <string name="error_unknown">Unknown error</string>
+    <string name="error_login_failed">Login failed: %1$s</string>
+    <string name="error_user_info">Unable to get user information.</string>
+    <string name="login_button">Login</string>
+    <string name="register_text">Don\'t have an account? Register</string>
+
+    <!--MainActivity-->
+
+
+
+    <string name="session_not_found">Session not found, please log in again.</string>
+    <string name="unknown">Unknown</string>
+    <string name="logo_desc">Smart Home Logo</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_profile">Profile</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Dashboard Cards -->
+    <string name="device_led">💡 LED Light</string>
+    <string name="device_fan">🌬️ Fan</string>
+    <string name="pir_sensor">🚶 Motion Sensor (PIR)</string>
+    <string name="water_level">💧 Water Level</string>
+
+    <!-- Chart -->
+    <string name="waiting_data">Waiting for data...</string>
+    <string name="temp_humidity_graph">🌡️ Temperature &amp;💧 Humidity Chart</string>
+    <string name="last_temperature">🌡️ Last temperature: %1$d°C</string>
+    <string name="last_humidity">💧 Last humidity: %1$d%%</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings ⚙️</string>
+    <string name="dark_theme">Dark Theme</string>
+
+    <string name="language_settings">🌐 Language Settings</string>
+    <string name="app_language">Application Language</string>
+    <string name="language_turkish">Turkish</string>
+    <string name="language_english">English</string>
+
+    <string name="time_format_24h">24-Hour Format</string>
+    <string name="time_24h">24-Hour</string>
+    <string name="time_12h">12-Hour</string>
+    <string name="time_format_changed">Time format: %1$s</string>
+
+    <!--ProfileActivity-->
+    <!-- GENERAL -->
+    <string name="unknown_profile">Unknown</string>
+    <!-- PROFILE HEADER -->
+    <string name="profile_title">Profile Information</string>
+    <!-- IMAGE CONTENT DESCRIPTIONS -->
+    <string name="desc_new_photo">New Photo</string>
+    <string name="desc_firebase_photo">Firebase Photo</string>
+    <string name="desc_default_profile">Default Profile</string>
+    <!-- PROFILE BUTTONS -->
+    <string name="change_photo">Change Photo</string>
+    <string name="photo_updated">Profile photo updated</string>
+    <!-- PROFILE INFO -->
+    <string name="email_label_profile">Email</string>
+    <string name="created_at_label">Registration Date</string>
+    <!-- PASSWORD -->
+    <string name="new_password_label">New Password</string>
+    <string name="update_password_button">Update Password</string>
+    <string name="logout_button">Log Out</string>
+    <!-- FEEDBACK MESSAGES -->
+    <string name="password_updated">Password updated successfully ✅</string>
+    <string name="error_with_message">Error: %1$s</string>
+    <string name="error_data_fetch">Failed to fetch data: %1$s</string>
+
+    <!--RegisterActivity-->
+    <!-- GENERAL -->
+    <string name="app_logo_desc">App Logo</string>
+    <!-- FORM LABELS -->
+    <string name="email_label_register">Email</string>
+    <string name="password_label_register">Password</string>
+    <!-- REGISTER BUTTONS / TEXTS -->
+    <string name="register_button">Register</string>
+    <string name="have_account">Already have an account? Log in</string>
+    <!-- TOAST MESSAGES -->
+    <string name="error_empty_fields_register">Please fill in all fields</string>
+    <string name="error_uid_null">Could not get user ID, please try again.</string>
+    <string name="register_success">Registration successful ✅</string>
+    <string name="register_failed">Registration failed: %1$s</string>
+    <string name="database_save_failed">Failed to save data: %1$s</string>
+
+    <!--StartActivity-->
+    <string name="splash_logo_desc">SmartHomeControl Logo</string>
+</resources>
