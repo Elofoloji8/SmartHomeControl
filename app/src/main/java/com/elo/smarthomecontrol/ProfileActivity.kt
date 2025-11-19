@@ -89,20 +89,30 @@ fun ProfileScreen(
     var base64Image by remember { mutableStateOf<String?>(null) }
     var bitmapImage by remember { mutableStateOf<android.graphics.Bitmap?>(null) }
     var createdAt by remember { mutableStateOf<String>("") }
+    var userEmail by remember { mutableStateOf(email) }
 
-    val scope = rememberCoroutineScope()
     val themePrefs = remember { ThemePreferences(context) }
     val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
 
-    // 🔄 Firebase'den kullanıcı verilerini al
+    // 🔄 Firebase'den kullanıcı verilerini güvenli şekilde al
     LaunchedEffect(Unit) {
         databaseRef.get().addOnSuccessListener { snapshot ->
+            // Profil resmi
             base64Image = snapshot.child("profileImage").getValue(String::class.java)
-            val createdAtMillis = snapshot.child("createdAt").getValue(Long::class.java) ?: 0L
-            if (createdAtMillis > 0L) {
+
+            // Tarihler (String veya Long olabilir)
+            val safeCreatedAt = snapshot.child("createdAt").value?.toString()?.toLongOrNull() ?: 0L
+            if (safeCreatedAt > 0L) {
                 val date = java.text.SimpleDateFormat("dd.MM.yyyy HH:mm", java.util.Locale.getDefault())
-                createdAt = date.format(java.util.Date(createdAtMillis))
+                createdAt = date.format(java.util.Date(safeCreatedAt))
             }
+
+            // E-posta iki yerde olabilir
+            userEmail = snapshot.child("email").getValue(String::class.java)
+                ?: snapshot.child("devices/email").getValue(String::class.java)
+                        ?: email
+        }.addOnFailureListener {
+            Toast.makeText(context, "Veri alınamadı: ${it.message}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -124,7 +134,19 @@ fun ProfileScreen(
         }
     }
 
-    // 🎨 Temaya göre arka plan gradient renkleri
+    // 🔍 Base64 verisini güvenli çöz (try-catch Compose dışı)
+    val safeBitmap = remember(base64Image) {
+        try {
+            base64Image?.let {
+                val imageBytes = Base64.decode(it, Base64.DEFAULT)
+                BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+            }
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    // 🎨 Tema renkleri
     val gradientColors = if (isDarkMode) {
         listOf(Color(0xFF0B1C2C), Color(0xFF1C3A5F))
     } else {
@@ -132,8 +154,6 @@ fun ProfileScreen(
     }
 
     val textColor = if (isDarkMode) Color.White else Color(0xFF0B1C2C)
-
-    // 🎨 Buton renkleri
     val darkBlue = Color(0xFF0B1C2C)
     val navyBlue = Color(0xFF112D44)
 
@@ -173,6 +193,7 @@ fun ProfileScreen(
         )
     }
 
+    // 🧭 Ekran düzeni
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -203,21 +224,17 @@ fun ProfileScreen(
                     bitmapImage != null -> {
                         Image(
                             bitmap = bitmapImage!!.asImageBitmap(),
-                            contentDescription = "Profil Fotoğrafı",
+                            contentDescription = "Yeni Fotoğraf",
                             modifier = Modifier.size(130.dp).clip(CircleShape)
                         )
                     }
-
-                    base64Image != null -> {
-                        val imageBytes = Base64.decode(base64Image, Base64.DEFAULT)
-                        val bmp = BitmapFactory.decodeByteArray(imageBytes, 0, imageBytes.size)
+                    safeBitmap != null -> {
                         Image(
-                            bitmap = bmp.asImageBitmap(),
+                            bitmap = safeBitmap.asImageBitmap(),
                             contentDescription = "Firebase Fotoğrafı",
                             modifier = Modifier.size(130.dp).clip(CircleShape)
                         )
                     }
-
                     else -> {
                         Image(
                             painter = rememberAsyncImagePainter("https://cdn-icons-png.flaticon.com/512/847/847969.png"),
@@ -239,7 +256,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(30.dp))
 
-            // Bilgiler Kartı
+            // Bilgi kartı
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(
@@ -252,7 +269,7 @@ fun ProfileScreen(
                     horizontalAlignment = Alignment.Start
                 ) {
                     Text("E-posta", color = textColor.copy(alpha = 0.7f))
-                    Text(email, color = textColor, fontWeight = FontWeight.Medium)
+                    Text(userEmail, color = textColor, fontWeight = FontWeight.Medium)
 
                     if (createdAt.isNotEmpty()) {
                         Spacer(modifier = Modifier.height(8.dp))

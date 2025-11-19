@@ -10,7 +10,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.SmartHomeControl"
+        android:theme="@style/Theme.TransparentSplash"
         tools:targetApi="31">
         <activity
             android:name=".ProfileActivity"
@@ -28,10 +28,9 @@
             android:name=".StartActivity"
             android:exported="true"
             android:label="@string/app_name"
-            android:theme="@style/Theme.SmartHomeControl">
+            android:theme="@style/Theme.TransparentSplash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>

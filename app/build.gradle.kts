@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation("androidx.datastore:datastore-preferences:1.1.1")
 
+    implementation("androidx.compose.material:material-icons-extended:1.6.8")
     // Firebase BoM
     implementation(platform("com.google.firebase:firebase-bom:34.4.0"))
     implementation("com.google.firebase:firebase-auth")
