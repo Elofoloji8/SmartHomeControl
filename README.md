@@ -105,9 +105,8 @@ SmartHomeControl/
 
 ## 🌟 Tema Önizlemesi
 
-| Aydınlık Mod 
-                                                                                                                                                                                                | Karanlık Mod                                                                             |
-| ------------------------------------------------------------------------------------------                                                        | ---------------------------------------------------------------------------------------- |
+| Aydınlık Mod | Karanlık Mod
+
 | <img width="431" height="844" alt="SmartHomeControlDark" src="https://github.com/user-attachments/assets/9986ca1d-f7c9-489a-bf56-43662a672e89" /> | <img width="394" height="836" alt="SmartHomeControlLight" src="https://github.com/user-attachments/assets/845c4595-d4d0-4e9b-83ed-c10e5e490aca" /> |
 
 ---
