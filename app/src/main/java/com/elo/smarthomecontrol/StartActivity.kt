@@ -3,6 +3,8 @@ package com.elo.smarthomecontrol
 import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.compose.ui.platform.LocalContext
+import android.app.Activity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.tween
@@ -34,39 +36,59 @@ class StartActivity : ComponentActivity() {
         val themePrefs = ThemePreferences(this)
 
         setContent {
+            val context = LocalContext.current
+            val activity = context as? Activity
             val isDarkMode by themePrefs.isDarkMode.collectAsState(initial = false)
+
             SmartHomeTheme(darkTheme = isDarkMode) {
                 SplashScreen(isDarkMode) {
-                    val currentUser = auth.currentUser
-                    if (currentUser != null) {
-                        val uid = currentUser.uid
-                        val userRef = database.child("users").child(uid)
+                    val sharedPref = context.getSharedPreferences("SmartHomePrefs", MODE_PRIVATE)
+                    val isFirstRun = sharedPref.getBoolean("isFirstRun", true)
 
-                        userRef.get().addOnSuccessListener { snapshot ->
-                            if (!snapshot.exists()) {
-                                val userData = mapOf(
-                                    "email" to currentUser.email,
-                                    "profileImage" to "",
-                                    "createdAt" to System.currentTimeMillis(),
-                                    "lastLogin" to System.currentTimeMillis()
-                                )
-                                userRef.setValue(userData)
-                            } else {
-                                userRef.child("lastLogin").setValue(System.currentTimeMillis())
-                            }
-
-                            startActivity(Intent(this@StartActivity, MainActivity::class.java))
-                            finish()
-                        }
+                    if (isFirstRun) {
+                        // 🚀 İlk açılışta OnboardingActivity’ye git
+                        context.startActivity(Intent(context, OnboardingActivity::class.java))
+                        sharedPref.edit().putBoolean("isFirstRun", false).apply()
+                        activity?.finish()
                     } else {
-                        startActivity(Intent(this@StartActivity, LoginActivity::class.java))
-                        finish()
+                        val currentUser = auth.currentUser
+                        if (currentUser != null) {
+                            val uid = currentUser.uid
+                            val userRef = database.child("users").child(uid)
+
+                            userRef.get().addOnSuccessListener { snapshot ->
+                                if (!snapshot.exists()) {
+                                    val userData = mapOf(
+                                        "email" to currentUser.email,
+                                        "profileImage" to "",
+                                        "createdAt" to System.currentTimeMillis(),
+                                        "lastLogin" to System.currentTimeMillis()
+                                    )
+                                    userRef.setValue(userData)
+                                } else {
+                                    userRef.child("lastLogin").setValue(System.currentTimeMillis())
+                                }
+
+                                context.startActivity(Intent(context, MainActivity::class.java))
+                                activity?.finish()
+                            }
+                        } else {
+                            context.startActivity(Intent(context, LoginActivity::class.java))
+                            activity?.finish()
+                        }
                     }
                 }
             }
         }
     }
-}
+    private fun isFirstLaunch(): Boolean {
+        val prefs = getSharedPreferences("app_prefs", MODE_PRIVATE)
+        val isFirst = prefs.getBoolean("first_launch", true)
+        if (isFirst) {
+            prefs.edit().putBoolean("first_launch", false).apply()
+        }
+        return isFirst
+    }
 
 @Composable
 fun SplashScreen(isDarkMode: Boolean, onFinish: () -> Unit) {
@@ -111,4 +133,4 @@ fun SplashScreen(isDarkMode: Boolean, onFinish: () -> Unit) {
             )
         }
     }
-}
+} }
