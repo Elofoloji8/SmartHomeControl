@@ -74,6 +74,13 @@ dependencies {
     implementation(libs.androidx.activity)
     implementation(libs.androidx.constraintlayout)
 
+    // renk paleti için
+    implementation("com.github.skydoves:colorpicker-compose:1.0.7")
+
+    // firebase olmadı
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
+    implementation("org.eclipse.paho:org.eclipse.paho.android.service:1.1.1")
+
     // 🔹 Coil (görseller için)
     implementation("io.coil-kt:coil-compose:2.6.0")
     implementation("com.github.tehras:charts:0.2.4-alpha")

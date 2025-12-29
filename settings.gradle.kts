@@ -3,7 +3,7 @@ pluginManagement {
         google()
         mavenCentral()
         gradlePluginPortal()
-        maven { url = uri("https://jitpack.io") } // ✅ eklendi
+        maven { url = uri("https://jitpack.io") }
     }
 }
 

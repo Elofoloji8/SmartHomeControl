@@ -29,6 +29,7 @@
     <string name="water_level">💧 Su Seviyesi</string>
     <!-- Chart -->
     <string name="temp_humidity_graph">🌡️ Sıcaklık ve 💧 Nem Grafiği</string>
+    <string name="temp_graph">Sıcaklık Grafiği</string>
     <string name="waiting_data">Veri bekleniyor...</string>
     <string name="last_temperature">🌡️ Son sıcaklık: %1$d°C</string>
     <string name="last_humidity">💧 Son nem: %1$d%%</string>

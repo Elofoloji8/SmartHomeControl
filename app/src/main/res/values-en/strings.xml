@@ -37,6 +37,7 @@
 
     <!-- Chart -->
     <string name="waiting_data">Waiting for data...</string>
+    <string name="temp_graph">Temperature Chart</string>
     <string name="temp_humidity_graph">🌡️ Temperature &amp;💧 Humidity Chart</string>
     <string name="last_temperature">🌡️ Last temperature: %1$d°C</string>
     <string name="last_humidity">💧 Last humidity: %1$d%%</string>
